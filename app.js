@@ -37,4 +37,28 @@ app.post('/register', async (req, res, next) => {
   res.redirect("/");
 });
 
+app.get("/login", (req, res) => {
+  res.render("login")
+});
+
+app.post("/login", async (req, res, next) => {
+  try {
+    const user = await User.authenticate(req.body.email, req.body.password);
+    if (user) {
+      return res.redirect("/");
+    }else {
+      res.redirect("/login")
+    }
+  } catch (e) {
+    return next(e)
+  }
+});
+
+app.get("/logout", (req, res) => {
+  res.session = null;
+  res.clearCookie("session");
+  res.clearCookie("session.sig");
+  res.redirect("/login");
+});
+
 app.listen(3000, () => console.log('Listening on port 3000!'));
